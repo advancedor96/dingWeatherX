@@ -50,43 +50,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        Picasso.get().load("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png").into(iv_weatherIcon);
-//        getLocation();
+        getLocation();
 
-        // show The Image in a ImageView
-//        new DownloadImageTask(iv_weatherIcon)
-//                .execute("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png");
     }
 
 
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            Log.d("ding", "1");
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            Log.d("ding", "2");
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            Log.d("ding", "3");
-            bmImage.setImageBitmap(result);
-        }
-    }
 
 
     private void getLocation() {
@@ -133,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
                     if(response.isSuccessful()){
                         Log.d("ding", "讀api成功");
                     String jsonStr = response.body().string();
-                    Log.d("ding", String.format("這是:%s", jsonStr));
 
                         try {
                             JSONObject obj = new JSONObject(jsonStr);
@@ -171,9 +138,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Log.d("ding", "設溫度:"+ temp);
-                tv_temp.setText(String.format("%s℃", temp));
-                Picasso.get().load(iconLink).into(iv_weatherIcon);
-
+                tv_temp.setText(String.format("%d℃", (int)Math.round(Double.parseDouble(temp))));
+                Picasso.get().load(iconLink).resize(450, 450).into(iv_weatherIcon);
             }
         });
     }
@@ -188,9 +154,6 @@ public class MainActivity extends AppCompatActivity {
                     getLocation();
                 } else {
                     Log.d("ding", "d發現還沒有權限");
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                 }
                 return;
             }
